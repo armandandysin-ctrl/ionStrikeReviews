@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ION Strikes — Reviews EVA</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #171a21;
+    --panel-border: #262b36;
+    --accent: #4f8cff;
+    --accent-glow: rgba(79, 140, 255, 0.15);
+    --text: #e6e9ef;
+    --text-dim: #8b93a3;
+    --danger: #ff8080;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(circle at top, #161a22, #0b0d11 70%);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ---------- Ecran mot de passe ---------- */
+  #lock-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  #lock-box {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 36px 32px;
+    width: 100%;
+    max-width: 340px;
+    text-align: center;
+  }
+  #lock-box h1 { font-size: 20px; margin: 0 0 6px; }
+  #lock-box .accent { color: var(--accent); }
+  #lock-box p { color: var(--text-dim); font-size: 13px; margin: 0 0 20px; }
+  #lock-box input {
+    width: 100%;
+    padding: 11px 14px;
+    background: #0f1115;
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  #lock-box input:focus { outline: none; border-color: var(--accent); }
+  #lock-box button {
+    width: 100%;
+    padding: 11px;
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  #lock-box button:hover { opacity: 0.9; }
+  #lock-error {
+    color: var(--danger);
+    font-size: 12px;
+    margin-top: 10px;
+    display: none;
+  }
+
+  /* ---------- Contenu principal ---------- */
+  #content { display: none; padding: 40px 20px 80px; }
+  header { max-width: 900px; margin: 0 auto 40px; text-align: center; }
+  header h1 { font-size: 28px; margin: 0 0 6px; letter-spacing: 0.5px; }
+  header .accent { color: var(--accent); }
+  header p { color: var(--text-dim); margin: 0; font-size: 14px; }
+
+  .toolbar { max-width: 900px; margin: 0 auto 24px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .toolbar input {
+    flex: 1; min-width: 200px; padding: 10px 14px;
+    background: var(--panel); border: 1px solid var(--panel-border);
+    border-radius: 8px; color: var(--text); font-size: 14px;
+  }
+  .toolbar input:focus { outline: none; border-color: var(--accent); }
+  .toolbar select {
+    padding: 10px 14px; background: var(--panel); border: 1px solid var(--panel-border);
+    border-radius: 8px; color: var(--text); font-size: 14px;
+  }
+
+  #grid {
+    max-width: 900px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px;
+  }
+  .card {
+    background: var(--panel); border: 1px solid var(--panel-border); border-radius: 10px;
+    padding: 16px 18px; text-decoration: none; color: var(--text);
+    display: flex; flex-direction: column; gap: 8px;
+    transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+  }
+  .card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 20px var(--accent-glow); }
+  .card .title { font-weight: 600; font-size: 15px; }
+  .card .meta { font-size: 12px; color: var(--text-dim); display: flex; justify-content: space-between; }
+  .card .tag {
+    display: inline-block; background: var(--accent-glow); color: var(--accent);
+    font-size: 11px; padding: 2px 8px; border-radius: 999px; width: fit-content;
+  }
+
+  #empty, #error {
+    max-width: 900px; margin: 40px auto 0; text-align: center;
+    color: var(--text-dim); font-size: 14px; display: none;
+  }
+  #error { color: var(--danger); }
+
+  footer {
+    max-width: 900px; margin: 50px auto 0; text-align: center;
+    color: var(--text-dim); font-size: 12px;
+    border-top: 1px solid var(--panel-border); padding-top: 18px;
+  }
+  code { background: var(--panel); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--panel-border); }
+</style>
+</head>
+<body>
+
+<!-- ================= ECRAN MOT DE PASSE ================= -->
+<div id="lock-screen">
+  <div id="lock-box">
+    <h1>ION <span class="accent">Strikes</span></h1>
+    <p>Accès réservé à l'équipe — entre le mot de passe</p>
+    <input type="password" id="pwd-input" placeholder="Mot de passe" autofocus>
+    <button id="pwd-btn">Accéder aux reviews</button>
+    <div id="lock-error">Mot de passe incorrect, réessaie chef.</div>
+  </div>
+</div>
+
+<!-- ================= CONTENU PROTEGE ================= -->
+<div id="content">
+  <header>
+    <h1>ION <span class="accent">Strikes</span> — Reviews EVA</h1>
+    <p>Accès centralisé à toutes les reviews de games de l'équipe</p>
+  </header>
+
+  <div class="toolbar">
+    <input type="text" id="search" placeholder="Rechercher une review (nom, date, adversaire...)">
+    <select id="sort">
+      <option value="date-desc">Plus récentes d'abord</option>
+      <option value="date-asc">Plus anciennes d'abord</option>
+      <option value="name-asc">Nom (A → Z)</option>
+    </select>
+  </div>
+
+  <div id="grid"></div>
+  <div id="empty">Aucune review ne correspond à ta recherche.</div>
+  <div id="error"></div>
+
+  <footer>
+    Pour ajouter une review, édite <code>reviews.json</code> et push sur GitHub.
+  </footer>
+</div>
+
+<script>
+  const SITE_PASSWORD = "IonStrike_2026_Eva";
+  const SESSION_KEY = "ion_strikes_unlocked";
+
+  const lockScreen = document.getElementById('lock-screen');
+  const content = document.getElementById('content');
+  const pwdInput = document.getElementById('pwd-input');
+  const pwdBtn = document.getElementById('pwd-btn');
+  const lockError = document.getElementById('lock-error');
+
+  function unlock() {
+    lockScreen.style.display = 'none';
+    content.style.display = 'block';
+    sessionStorage.setItem(SESSION_KEY, "1");
+    loadReviews();
+  }
+
+  function tryUnlock() {
+    if (pwdInput.value === SITE_PASSWORD) {
+      unlock();
+    } else {
+      lockError.style.display = 'block';
+      pwdInput.value = '';
+      pwdInput.focus();
+    }
+  }
+
+  pwdBtn.addEventListener('click', tryUnlock);
+  pwdInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') tryUnlock();
+  });
+
+  // Reste déverrouillé tant que l'onglet est ouvert
+  if (sessionStorage.getItem(SESSION_KEY) === "1") {
+    unlock();
+  }
+
+  /* ============================================================
+     LOGIQUE DES REVIEWS
+     ============================================================ */
+  let reviews = [];
+
+  async function loadReviews() {
+    try {
+      const res = await fetch('reviews.json', { cache: 'no-store' });
+      if (!res.ok) throw new Error('reviews.json introuvable');
+      reviews = await res.json();
+      render();
+    } catch (err) {
+      document.getElementById('error').style.display = 'block';
+      document.getElementById('error').textContent =
+        "Impossible de charger reviews.json — vérifie qu'il est bien présent à côté de index.html. (" + err.message + ")";
+    }
+  }
+
+  function render() {
+    const query = document.getElementById('search').value.toLowerCase();
+    const sort = document.getElementById('sort').value;
+    const grid = document.getElementById('grid');
+    const empty = document.getElementById('empty');
+
+    let filtered = reviews.filter(r =>
+      (r.title || '').toLowerCase().includes(query) ||
+      (r.opponent || '').toLowerCase().includes(query) ||
+      (r.date || '').toLowerCase().includes(query) ||
+      (r.tag || '').toLowerCase().includes(query)
+    );
+
+    filtered.sort((a, b) => {
+      if (sort === 'date-desc') return new Date(b.date) - new Date(a.date);
+      if (sort === 'date-asc') return new Date(a.date) - new Date(b.date);
+      if (sort === 'name-asc') return (a.title || '').localeCompare(b.title || '');
+      return 0;
+    });
+
+    grid.innerHTML = '';
+    empty.style.display = filtered.length === 0 ? 'block' : 'none';
+
+    filtered.forEach(r => {
+      const a = document.createElement('a');
+      a.className = 'card';
+      a.href = r.file;
+      a.innerHTML = `
+        <span class="tag">${r.tag || 'Review'}</span>
+        <span class="title">${r.title || r.file}</span>
+        <span class="meta">
+          <span>${r.opponent ? 'vs ' + r.opponent : ''}</span>
+          <span>${r.date || ''}</span>
+        </span>
+      `;
+      grid.appendChild(a);
+    });
+  }
+
+  document.getElementById('search')?.addEventListener('input', render);
+  document.getElementById('sort')?.addEventListener('change', render);
+</script>
+
+</body>
+</html>
